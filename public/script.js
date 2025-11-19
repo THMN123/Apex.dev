@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "https://esm.run/@google/genai";
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-import { SUPABASE_URL, SUPABASE_ANON_KEY, GEMINI_API_KEY } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, GEMINI_API_KEY } from '/config.js';
 
 // --- INIT SUPABASE & GEMINI ---
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
