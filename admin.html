@@ -28,6 +28,24 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .hidden { display: none; }
+        
+        /* File input styling */
+        input[type="file"]::file-selector-button {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #10b981;
+            color: #022c22;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: #34d399;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]">
@@ -71,8 +89,11 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs text-zinc-500 uppercase mb-1">Image URL</label>
-                            <input type="url" id="p-img" placeholder="https://..." class="w-full bg-zinc-900 border border-white/10 rounded p-2 focus:border-brand-500 outline-none" required>
+                            <label class="block text-xs text-zinc-500 uppercase mb-1">Project Image</label>
+                            <input type="file" id="p-img-file" accept="image/*" class="w-full bg-zinc-900 border border-white/10 rounded p-2 focus:border-brand-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-brand-500 file:text-brand-950 hover:file:bg-brand-400" required>
+                            <div id="image-preview" class="mt-2 hidden">
+                                <img id="preview-img" class="w-20 h-20 object-cover rounded border border-white/10">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-xs text-zinc-500 uppercase mb-1">Project Link</label>
@@ -227,28 +248,61 @@
             });
         }
 
-        // 5. Add Project
+        // 5. Add Project (Updated for file upload)
         addProjectForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
             btn.textContent = "Uploading...";
             btn.disabled = true;
 
-            const newProject = {
-                title: document.getElementById('p-title').value,
-                description: document.getElementById('p-desc').value,
-                image_url: document.getElementById('p-img').value,
-                link: document.getElementById('p-link').value,
-                tags: document.getElementById('p-tags').value.split(',').map(t => t.trim())
-            };
+            const fileInput = document.getElementById('p-img-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert("Please select an image file");
+                btn.textContent = "Upload to Database";
+                btn.disabled = false;
+                return;
+            }
 
-            const { error } = await supabase.from('projects').insert([newProject]);
+            try {
+                // Upload image to Supabase Storage
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+                const filePath = `project-images/${fileName}`;
 
-            if (error) {
-                alert("Upload Failed: " + error.message);
-            } else {
-                addProjectForm.reset();
-                fetchProjects();
+                const { error: uploadError } = await supabase.storage
+                    .from('project-images')
+                    .upload(filePath, file);
+
+                if (uploadError) {
+                    throw uploadError;
+                }
+
+                // Get public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('project-images')
+                    .getPublicUrl(filePath);
+
+                const newProject = {
+                    title: document.getElementById('p-title').value,
+                    description: document.getElementById('p-desc').value,
+                    image_url: publicUrl,
+                    link: document.getElementById('p-link').value,
+                    tags: document.getElementById('p-tags').value.split(',').map(t => t.trim())
+                };
+
+                const { error } = await supabase.from('projects').insert([newProject]);
+
+                if (error) {
+                    alert("Upload Failed: " + error.message);
+                } else {
+                    addProjectForm.reset();
+                    document.getElementById('image-preview').classList.add('hidden');
+                    fetchProjects();
+                }
+            } catch (error) {
+                alert("Image Upload Failed: " + error.message);
             }
             
             btn.textContent = "Upload to Database";
@@ -266,6 +320,24 @@
                 alert("Delete failed: " + error.message);
             }
         }
+
+        // Add image preview functionality
+        document.getElementById('p-img-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.classList.add('hidden');
+            }
+        });
 
         // Initialize
         checkSession();
