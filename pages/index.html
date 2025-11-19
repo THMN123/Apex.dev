@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apex.dev | Principal Software Architect</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',
+                400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857',
+                800: '#065f46', 900: '#064e3b', 950: '#022c22',
+              },
+              dark: {
+                950: '#030303', 900: '#0c0c0c', 800: '#171717', 700: '#262626',
+              }
+            },
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
+            animation: {
+              'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'blob': 'blob 7s infinite',
+              'shimmer': 'shimmer 2s linear infinite',
+              'gradient-x': 'gradient-x 3s ease infinite',
+              'gradient-xy': 'gradient-xy 15s ease infinite',
+            },
+            keyframes: {
+              float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
+              blob: {
+                "0%": { transform: "translate(0px, 0px) scale(1)" },
+                "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                "100%": { transform: "translate(0px, 0px) scale(1)" }
+              },
+              shimmer: { from: { backgroundPosition: '0 0' }, to: { backgroundPosition: '-200% 0' } },
+              'gradient-x': {
+                '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+                '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+              },
+              'gradient-xy': {
+                  '0%, 100%': { 'background-size': '400% 400%', 'background-position': 'left center' },
+                  '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }
+              }
+            }
+          },
+        },
+      };
+    </script>
+    
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
+</head>
+<body class="bg-dark-950 text-zinc-200 selection:bg-brand-500/20 selection:text-brand-200 overflow-x-hidden">
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-brand-900/20 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-emerald-900/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-[45rem] h-[45rem] bg-brand-800/10 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob animation-delay-4000"></div>
+        <div class="absolute inset-0 bg-grid opacity-[0.15]"></div>
+    </div>
+
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent pt-4">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="text-xl font-extrabold tracking-tighter text-white cursor-pointer hover:opacity-80 transition-opacity" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                apex<span class="text-brand-400">.dev</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-zinc-400">
+                <button onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})" class="hover:text-brand-400 transition-colors">Work</button>
+                <button onclick="document.getElementById('pricing').scrollIntoView({behavior: 'smooth'})" class="hover:text-brand-400 transition-colors">Investment</button>
+                <button onclick="document.getElementById('testimonials').scrollIntoView({behavior: 'smooth'})" class="hover:text-brand-400 transition-colors">Trust</button>
+            </div>
+
+            <button onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})" class="group relative px-5 py-2 text-sm font-semibold text-brand-950 bg-brand-400 rounded-md transition-all shadow-[0_0_15px_-5px_rgba(52,211,153,0.5)] hover:shadow-[0_0_20px_-5px_rgba(52,211,153,0.7)] overflow-hidden">
+                <span class="relative z-10">Hire Apex</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-brand-400 via-white/40 to-brand-400 -translate-x-full group-hover:animate-shimmer"></div>
+            </button>
+        </div>
+    </nav>
+
+    <section id="home" class="relative pt-40 pb-24 lg:pt-56 lg:pb-40 overflow-hidden reveal-section">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-900/10 border border-brand-500/20 text-xs font-medium text-brand-400 mb-8 shadow-[0_0_20px_-5px_rgba(16,185,129,0.2)] backdrop-blur-sm animate-float">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    ACCEPTING NEW CLIENTS FOR Q2 2025
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter text-white leading-[1.1] mb-8">
+                    Architecting the <br/>
+                    <span class="relative inline-block">
+                        <span class="absolute -inset-1 bg-gradient-to-r from-brand-500 to-emerald-500 blur-2xl opacity-20 animate-pulse-slow"></span>
+                        <span class="relative text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-400 to-emerald-500 bg-[length:200%_auto] animate-gradient-x">Future of Web.</span>
+                    </span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-zinc-400 mb-10 leading-relaxed max-w-2xl mx-auto">
+                    Apex.dev delivers enterprise-grade engineering solutions. 
+                    Specializing in high-performance React applications, scalable Node.js backends, and seamless AI integration.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="document.getElementById('pricing').scrollIntoView({behavior: 'smooth'})" class="group relative px-8 py-4 rounded-lg bg-brand-600 text-white font-semibold transition-all shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_-10px_rgba(16,185,129,0.5)] hover:-translate-y-1 overflow-hidden">
+                        <span class="relative z-10">Start Your Project</span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                    </button>
+                    <button onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-white font-semibold transition-all hover:-translate-y-1">
+                        Explore Work
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="border-y border-white/5 bg-black/40 backdrop-blur-md py-10 reveal-section">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center gap-8 overflow-hidden opacity-40 hover:opacity-100 transition-all duration-700">
+                <span class="text-xl font-bold tracking-widest text-zinc-500 shrink-0 uppercase hover:text-brand-400 transition-colors cursor-default">React 19</span>
+                <span class="text-xl font-bold tracking-widest text-zinc-500 shrink-0 uppercase hover:text-brand-400 transition-colors cursor-default">Next.js</span>
+                <span class="text-xl font-bold tracking-widest text-zinc-500 shrink-0 uppercase hover:text-brand-400 transition-colors cursor-default">TypeScript</span>
+                <span class="text-xl font-bold tracking-widest text-zinc-500 shrink-0 uppercase hover:text-brand-400 transition-colors cursor-default">Supabase</span>
+                <span class="text-xl font-bold tracking-widest text-zinc-500 shrink-0 uppercase hover:text-brand-400 transition-colors cursor-default">PostgreSQL</span>
+                <span class="text-xl font-bold tracking-widest text-zinc-500 shrink-0 uppercase hover:text-brand-400 transition-colors cursor-default">Gemini</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="projects" class="py-32 relative reveal-section">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+                <div>
+                    <h2 class="text-4xl font-bold text-white mb-4 tracking-tight">Engineering Excellence</h2>
+                    <p class="text-zinc-400 max-w-md">A curated selection of mission-critical systems and applications built for scale.</p>
+                </div>
+                <a href="#" class="text-brand-400 hover:text-brand-300 text-sm font-bold flex items-center gap-2 uppercase tracking-wide group">
+                    View Github 
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
+                </a>
+            </div>
+
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-32 relative reveal-section">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center max-w-2xl mx-auto mb-20">
+                <h2 class="text-4xl font-bold text-white mb-6 tracking-tight">Investment Plans</h2>
+                <p class="text-zinc-400 text-lg">Transparent pricing for professional-grade delivery. No hidden fees, just high-quality code.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 items-start">
+                
+                <div class="relative flex flex-col p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] h-full group overflow-hidden glass-card border-white/5 hover:border-white/10">
+                    <div class="mb-5 relative z-10">
+                        <h3 class="text-lg font-medium text-white">MVP Sprint</h3>
+                        <div class="mt-2 flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-white">M2,499</span>
+                        </div>
+                        <p class="mt-4 text-sm text-zinc-400 leading-relaxed">Rapid prototyping for startups. Go from zero to deployed product in 14 days.</p>
+                    </div>
+                    <div class="flex-1 relative z-10">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Next.js Architecture</span></li>
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Supabase Auth & DB</span></li>
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Stripe Integration</span></li>
+                        </ul>
+                    </div>
+                    <button class="mt-8 w-full py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-300 relative z-10 bg-white/5 hover:bg-white/10 text-white border border-white/10">Get Started</button>
+                </div>
+
+                <div class="relative flex flex-col p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] h-full group overflow-hidden bg-zinc-900/80 border-transparent">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-900/40 via-emerald-900/20 to-black bg-[length:400%_400%] animate-gradient-xy -z-10"></div>
+                    <div class="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-brand-500 via-emerald-500 to-brand-500 opacity-50 blur-sm group-hover:opacity-75 transition-opacity duration-500 -z-20"></div>
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-500 text-brand-950 text-xs font-bold px-3 py-1 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)] z-20 border border-brand-400">MOST POPULAR</div>
+                    
+                    <div class="mb-5 relative z-10">
+                        <h3 class="text-lg font-medium text-brand-400">Production Scale</h3>
+                        <div class="mt-2 flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-white">M3,499</span>
+                            <span class="text-zinc-500 text-sm">/project</span>
+                        </div>
+                        <p class="mt-4 text-sm text-zinc-400 leading-relaxed">Complete SaaS solution designed for thousands of concurrent users and scalability.</p>
+                    </div>
+                    <div class="flex-1 relative z-10">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-brand-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Microservices Ready</span></li>
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-brand-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Advanced Caching</span></li>
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-brand-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>CI/CD Pipelines</span></li>
+                        </ul>
+                    </div>
+                    <button class="mt-8 w-full py-2.5 px-4 rounded-lg text-sm font-bold transition-all duration-300 relative z-10 bg-brand-500 text-brand-950 hover:bg-brand-400 shadow-[0_0_25px_-5px_rgba(16,185,129,0.6)] border border-white/20 hover:scale-105">Get Started</button>
+                </div>
+
+                <div class="relative flex flex-col p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] h-full group overflow-hidden glass-card border-white/5 hover:border-white/10">
+                    <div class="mb-5 relative z-10">
+                        <h3 class="text-lg font-medium text-white">Architecture Retainer</h3>
+                        <div class="mt-2 flex items-baseline gap-1">
+                            <span class="text-3xl font-bold text-white">M5,499</span>
+                            <span class="text-zinc-500 text-sm">/month</span>
+                        </div>
+                        <p class="mt-4 text-sm text-zinc-400 leading-relaxed">Monthly fractional CTO services for teams needing high-level guidance.</p>
+                    </div>
+                    <div class="flex-1 relative z-10">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Code Reviews</span></li>
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>System Design</span></li>
+                            <li class="flex items-start gap-3 text-sm text-zinc-300"><svg class="w-5 h-5 shrink-0 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg> <span>Team Mentoring</span></li>
+                        </ul>
+                    </div>
+                    <button class="mt-8 w-full py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-300 relative z-10 bg-white/5 hover:bg-white/10 text-white border border-white/10">Get Started</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-32 border-t border-white/5 bg-black/30 backdrop-blur-sm reveal-section">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-white mb-16 text-center tracking-tight">Trusted by Industry Leaders</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-brand-500/20 transition-all hover:-translate-y-1 duration-300">
+                    <div class="mb-6 text-brand-500 flex gap-1">
+                        <span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span>
+                    </div>
+                    <p class="text-zinc-300 mb-6 leading-relaxed italic">"Apex.dev didn't just build our app; they re-engineered our entire business logic. The performance gains were 10x."</p>
+                    <div>
+                        <div class="text-white font-semibold">Sarah Chen</div>
+                        <div class="text-zinc-500 text-sm">CTO, Nexus Financial</div>
+                    </div>
+                </div>
+                <div class="p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-brand-500/20 transition-all hover:-translate-y-1 duration-300">
+                    <div class="mb-6 text-brand-500 flex gap-1">
+                        <span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span>
+                    </div>
+                    <p class="text-zinc-300 mb-6 leading-relaxed italic">"The cleanest code I've seen in my 15 years of tech. Delivered early and under budget. Absolute masterclass."</p>
+                    <div>
+                        <div class="text-white font-semibold">Marcus Thorne</div>
+                        <div class="text-zinc-500 text-sm">Founder, Orbit AI</div>
+                    </div>
+                </div>
+                <div class="p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-brand-500/20 transition-all hover:-translate-y-1 duration-300">
+                    <div class="mb-6 text-brand-500 flex gap-1">
+                        <span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span><span class="drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">★</span>
+                    </div>
+                    <p class="text-zinc-300 mb-6 leading-relaxed italic">"We needed enterprise-grade security and scalability. Apex delivered exactly that. A partner, not just a dev."</p>
+                    <div>
+                        <div class="text-white font-semibold">Elena Rodriguez</div>
+                        <div class="text-zinc-500 text-sm">VP Engineering, BlocChain Systems</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-32 relative overflow-hidden bg-black reveal-section">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-500/50 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-zinc-300 uppercase tracking-wider mb-8">
+                    <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+                    <span>Initiate Protocol</span>
+                </div>
+                <h2 class="text-5xl font-bold text-white mb-8 tracking-tight">
+                    Ready to scale your<br/>
+                    <span class="text-brand-500">digital infrastructure?</span>
+                </h2>
+                <p class="text-zinc-400 mb-10 text-lg leading-relaxed max-w-lg">
+                    Whether you need a complex SaaS architecture or a high-performance marketing frontend, Apex.dev delivers.
+                </p>
+                
+                <div class="space-y-6">
+                    <a href="https://wa.me/26662510193" target="_blank" class="block p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-brand-500/50 transition-all cursor-pointer group hover:bg-zinc-900/80">
+                        <h4 class="text-xs text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                            Direct Line (WhatsApp) 
+                            <svg class="w-3 h-3 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                        </h4>
+                        <p class="text-white text-xl font-medium group-hover:text-brand-400 transition-colors">+266 6251 0193</p>
+                    </a>
+                    
+                    <a href="mailto:thaanemoletsane@gmail.com" class="block p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-brand-500/50 transition-all cursor-pointer group hover:bg-zinc-900/80">
+                        <h4 class="text-xs text-zinc-500 uppercase tracking-widest mb-2">Email Encryption</h4>
+                        <p class="text-white text-xl font-medium group-hover:text-brand-400 transition-colors">thaanemoletsane@gmail.com</p>
+                    </a>
+
+                    <div class="flex gap-4 pt-4">
+                        <a href="#" class="p-4 rounded-lg bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white hover:border-white/20 transition-all"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg></a>
+                        <a href="#" class="p-4 rounded-lg bg-zinc-900 border border-white/5 text-zinc-400 hover:text-brand-400 hover:border-brand-500/20 transition-all"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" /></svg></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center lg:justify-end">
+                <div class="relative w-full max-w-md group">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-brand-500 via-cyan-500 to-brand-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000 animate-tilt"></div>
+                    
+                    <div class="relative glass-card rounded-xl overflow-hidden flex flex-col h-[500px] border border-white/5 shadow-2xl shadow-black/50 bg-zinc-950/90">
+                        <div class="p-4 border-b border-white/5 bg-white/[0.02] flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shadow-[0_0_10px_rgba(16,185,129,0.2)] animate-pulse-slow">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white tracking-wide">Apex Intelligence</h3>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    Gemini 2.5 Flash • Online
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+                            <div class="flex justify-start">
+                                <div class="max-w-[85%] rounded-lg px-4 py-2.5 text-sm leading-relaxed bg-brand-900/20 text-brand-50 border border-brand-500/10">
+                                    System online. I am ApexBot. How can I assist with your engineering requirements today?
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="chat-form" class="p-3 border-t border-white/5 bg-black/20">
+                            <div class="relative">
+                                <input
+                                    id="chat-input"
+                                    type="text"
+                                    placeholder="Inquire about architecture, rates, or stack..."
+                                    class="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg pl-4 pr-10 py-3 text-sm text-white focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all placeholder-zinc-600"
+                                />
+                                <button 
+                                    type="submit"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-zinc-800 hover:bg-brand-500 text-zinc-400 hover:text-brand-950 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-white/5 bg-black text-center md:text-left">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <div class="text-2xl font-bold tracking-tighter text-white mb-2">
+                    apex<span class="text-brand-500">.dev</span>
+                </div>
+                <p class="text-zinc-600 text-sm">
+                    Engineering excellence for the modern web.
+                </p>
+            </div>
+            <div class="flex gap-8 text-sm text-zinc-500">
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                <a href="#" class="hover:text-white transition-colors">Status</a>
+            </div>
+            <p class="text-zinc-700 text-sm">
+                © 2025 Apex Solutions.
+            </p>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

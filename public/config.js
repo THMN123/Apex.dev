@@ -1,0 +1,6 @@
+// config.js
+const SUPABASE_URL = 'https://nyzxzuxppgdekubmqztj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55enh6dXhwcGdkZWt1Ym1xenRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NDU2NjMsImV4cCI6MjA3OTEyMTY2M30.ijN7VxnLlTQBmHWrARoUCN_Dtw81NE1HUyrAlLKmeq8';
+const GEMINI_API_KEY = 'AIzaSyBxR67BIWNBFff99-cDpLCtNu8tZfB8cFs';
+
+export { SUPABASE_URL, SUPABASE_ANON_KEY, GEMINI_API_KEY };
