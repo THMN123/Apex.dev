@@ -69,23 +69,52 @@ async function loadProjects() {
     `).join('');
 }
 
-// --- AI CHAT (CORRECTED) ---
+// --- AI CHAT (FIXED & TRAINED) ---
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const messagesContainer = document.getElementById('chat-messages');
 let chatSession = null;
 
 if (GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY') {
-    // 1. Use the standard GenAI instantiation
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     
-    // 2. Correct Model Name (1.5-flash is the current fast standard)
+    // *** FIX 1: Use specific version "gemini-1.5-flash-001" to avoid 404 ***
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
-        systemInstruction: "You are ApexBot. Concise, professional, futuristic. Portfolio Engineer.",
+        model: "gemini-1.5-flash-001", 
+        systemInstruction: `
+You are ApexBot, the AI interface for Apex.dev. 
+Your Persona: Concise, professional, futuristic, highly technical but accessible.
+Your Goal: Convert visitors into clients for Apex.dev engineering services.
+
+**KNOWLEDGE BASE (Use this to answer questions):**
+
+[SERVICES & PRICING]
+1. MVP Sprint - M2,499 (One-time)
+   - For: Startups needing rapid prototyping.
+   - Includes: Next.js Architecture, Supabase Auth & DB, Stripe Integration.
+   - Delivery: 14 Days.
+
+2. Production Scale - M3,499/project (Most Popular)
+   - For: Complete SaaS solutions for scale.
+   - Includes: Microservices, Advanced Caching, CI/CD Pipelines.
+
+3. Architecture Retainer - M5,499/month
+   - For: Ongoing fractional CTO services.
+   - Includes: Code Reviews, System Design, Team Mentoring.
+
+[CONTACT INFO]
+- WhatsApp: +266 6251 0193
+- Email: thaanemoletsane@gmail.com
+
+[YOUR CAPABILITIES]
+- You specialize in: React 19, Next.js, TypeScript, Supabase, PostgreSQL, Gemini AI.
+- You deliver: High-performance, enterprise-grade engineering.
+
+If asked about prices, quote them exactly in Maloti (M).
+If asked to start a project, direct them to the WhatsApp or Email.
+        `,
     });
 
-    // 3. Start the chat session
     chatSession = model.startChat({
         history: [],
         generationConfig: {
@@ -117,12 +146,10 @@ chatForm.addEventListener('submit', async (e) => {
     scrollToBottom();
 
     try {
-        // 4. Send message using standard SDK syntax
         const result = await chatSession.sendMessageStream(text);
         let fullText = "";
         const bubble = aiMsgDiv.querySelector('div');
         
-        // 5. Iterate over the stream (Standard SDK syntax: chunk.text())
         for await (const chunk of result.stream) {
             const chunkText = chunk.text();
             fullText += chunkText;
@@ -130,7 +157,7 @@ chatForm.addEventListener('submit', async (e) => {
             scrollToBottom();
         }
     } catch (err) {
-        console.error("AI Error:", err);
+        console.error("AI Error details:", err);
         aiMsgDiv.querySelector('div').textContent = "Connection Error: " + err.message;
     }
 });
