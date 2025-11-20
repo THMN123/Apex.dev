@@ -127,7 +127,6 @@ function scrollToBottom() {
 }
 
 chatForm.addEventListener('submit', async (e) => {
-    // FIX: e.preventDefault() is now executed, stopping the page refresh
     e.preventDefault(); 
     const text = chatInput.value.trim();
     if (!text || !chatSession) return;
@@ -145,7 +144,6 @@ chatForm.addEventListener('submit', async (e) => {
     scrollToBottom();
 
     try {
-        // FIX: sendMessageStream now uses the content string directly
         const result = await chatSession.sendMessageStream(text); 
         let fullText = "";
         const bubble = aiMsgDiv.querySelector('div');
@@ -162,5 +160,4 @@ chatForm.addEventListener('submit', async (e) => {
 });
 
 // Initialize
-// This call should now execute and load projects
 loadProjects();
