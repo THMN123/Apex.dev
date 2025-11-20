@@ -1,8 +1,9 @@
-import { GoogleGenAI } from "https://esm.run/@google/genai";
+// script.js
+import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, GEMINI_API_KEY } from '/config.js';
 
-// --- INIT SUPABASE & GEMINI ---
+// --- INIT SUPABASE ---
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- SCROLL REVEAL ANIMATION ---
@@ -68,18 +69,27 @@ async function loadProjects() {
     `).join('');
 }
 
-// --- AI CHAT ---
+// --- AI CHAT (CORRECTED) ---
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const messagesContainer = document.getElementById('chat-messages');
 let chatSession = null;
 
 if (GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY') {
-    const aiClient = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-    chatSession = aiClient.chats.create({
-        model: 'gemini-2.5-flash',
-        config: {
-            systemInstruction: `You are ApexBot. Concise, professional, futuristic. Portfolio Engineer.`,
+    // 1. Use the standard GenAI instantiation
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    
+    // 2. Correct Model Name (1.5-flash is the current fast standard)
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: "You are ApexBot. Concise, professional, futuristic. Portfolio Engineer.",
+    });
+
+    // 3. Start the chat session
+    chatSession = model.startChat({
+        history: [],
+        generationConfig: {
+            maxOutputTokens: 500,
             temperature: 0.7,
         },
     });
@@ -99,7 +109,7 @@ chatForm.addEventListener('submit', async (e) => {
     chatInput.value = '';
     scrollToBottom();
 
-    // AI Msg
+    // AI Msg Placeholder
     const aiMsgDiv = document.createElement('div');
     aiMsgDiv.className = "flex justify-start mb-4";
     aiMsgDiv.innerHTML = `<div class="max-w-[85%] rounded-lg px-4 py-2.5 text-sm bg-brand-900/20 text-brand-50 border border-brand-500/10">...</div>`;
@@ -107,17 +117,21 @@ chatForm.addEventListener('submit', async (e) => {
     scrollToBottom();
 
     try {
-        const result = await chatSession.sendMessageStream({ message: text });
+        // 4. Send message using standard SDK syntax
+        const result = await chatSession.sendMessageStream(text);
         let fullText = "";
         const bubble = aiMsgDiv.querySelector('div');
         
-        for await (const chunk of result) {
-            fullText += chunk.text || "";
+        // 5. Iterate over the stream (Standard SDK syntax: chunk.text())
+        for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            fullText += chunkText;
             bubble.textContent = fullText;
             scrollToBottom();
         }
     } catch (err) {
-        aiMsgDiv.querySelector('div').textContent = "Connection Error.";
+        console.error("AI Error:", err);
+        aiMsgDiv.querySelector('div').textContent = "Connection Error: " + err.message;
     }
 });
 
