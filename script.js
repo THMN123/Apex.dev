@@ -1,9 +1,11 @@
 // script.js
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+// --- INIT SUPABASE & GEMINI ---
+// Pinned the SDK version to ensure stability and prevent caching issues
+import { GoogleGenAI } from "https://esm.run/@google/genai@0.21.0"; 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, GEMINI_API_KEY } from '/config.js';
 
-// --- INIT SUPABASE ---
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- SCROLL REVEAL ANIMATION ---
@@ -40,6 +42,7 @@ async function loadProjects() {
         .order('created_at', { ascending: false });
 
     if (error || !projects) {
+        // If you see this error, ensure RLS policy is set for public SELECT on 'projects' table
         container.innerHTML = `<div class="text-red-500">Error loading portfolio protocol.</div>`;
         return;
     }
@@ -76,12 +79,14 @@ const messagesContainer = document.getElementById('chat-messages');
 let chatSession = null;
 
 if (GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY') {
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const aiClient = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
     
-    // *** FIX 1: Use specific version "gemini-1.5-flash-001" to avoid 404 ***
-    const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash-001", 
-        systemInstruction: `
+    // Using the supported Gemini 2.5 Flash model
+    chatSession = aiClient.chats.create({
+        model: 'gemini-2.5-flash',
+        config: {
+            // Restored full System Instruction for better answers
+            systemInstruction: `
 You are ApexBot, the AI interface for Apex.dev. 
 Your Persona: Concise, professional, futuristic, highly technical but accessible.
 Your Goal: Convert visitors into clients for Apex.dev engineering services.
@@ -112,13 +117,7 @@ Your Goal: Convert visitors into clients for Apex.dev engineering services.
 
 If asked about prices, quote them exactly in Maloti (M).
 If asked to start a project, direct them to the WhatsApp or Email.
-        `,
-    });
-
-    chatSession = model.startChat({
-        history: [],
-        generationConfig: {
-            maxOutputTokens: 500,
+            `,
             temperature: 0.7,
         },
     });
@@ -146,19 +145,21 @@ chatForm.addEventListener('submit', async (e) => {
     scrollToBottom();
 
     try {
-        const result = await chatSession.sendMessageStream(text);
+        // FIX: The sendMessageStream method expects the string content directly.
+        const result = await chatSession.sendMessageStream(text); 
         let fullText = "";
         const bubble = aiMsgDiv.querySelector('div');
         
-        for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            fullText += chunkText;
+        for await (const chunk of result) {
+            // Note: The new SDK uses 'chunk.text' instead of 'chunk.text()'
+            fullText += chunk.text || "";
             bubble.textContent = fullText;
             scrollToBottom();
         }
     } catch (err) {
-        console.error("AI Error details:", err);
-        aiMsgDiv.querySelector('div').textContent = "Connection Error: " + err.message;
+        console.error("AI Connection Error:", err);
+        // Display a more helpful error message
+        aiMsgDiv.querySelector('div').textContent = "Connection Error: Check console for details, or verify your GEMINI_API_KEY.";
     }
 });
 
