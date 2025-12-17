@@ -81,3 +81,77 @@ input[type="file"]::file-selector-button {
 input[type="file"]::file-selector-button:hover {
   background-color: #34d399;
 }
+
+/* ========================================== */
+/* NEW: Project Card Clickable Area Styling */
+/* ========================================== */
+
+/* Ensure project cards fill their containers and have proper hit areas */
+#projects-grid a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    outline: none;
+}
+
+/* Smooth tap/click feedback */
+#projects-grid a:active .glass-card {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+}
+
+/* Better focus states for accessibility */
+#projects-grid a:focus-visible .glass-card {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+/* Ensure images maintain aspect ratio */
+#projects-grid img {
+    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Touch-friendly hover effects */
+@media (hover: hover) and (pointer: fine) {
+    #projects-grid a:hover .glass-card {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                    0 0 30px rgba(16, 185, 129, 0.1);
+        transform: translateY(-4px);
+    }
+}
+
+/* Mobile tap improvements */
+@media (max-width: 768px) {
+    #projects-grid a:active .glass-card {
+        transform: scale(0.95);
+    }
+}
+
+/* Line clamping for descriptions */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Smooth transitions */
+.glass-card {
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Gradient text animation */
+.text-gradient-animate {
+    background-size: 200% auto;
+    animation: gradient-x 3s ease infinite;
+}
+
+@keyframes gradient-x {
+    0%, 100% {
+        background-position: left center;
+    }
+    50% {
+        background-position: right center;
+    }
+}
